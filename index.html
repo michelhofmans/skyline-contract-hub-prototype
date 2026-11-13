@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Skyline Contract Hub — Uber Experience Prototype</title>
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --primary: #0284c7;
+      --primary-dark: #0369a1;
+      --primary-light: #e0f2fe;
+      --accent: #0f172a;
+      --success: #10b981;
+      --success-bg: #ecfdf5;
+      --warning: #f59e0b;
+      --warning-bg: #fffbeb;
+      --danger: #ef4444;
+      --danger-bg: #fef2f2;
+      --purple: #6366f1;
+      --purple-bg: #eef2ff;
+      --radius: 14px;
+      --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+      --shadow-md: 0 8px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.45;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP NAVIGATION BAR — ULTRA MINIMAL ("UBER EXPERIENCE") */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px 14px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      flex-shrink: 0;
+      border-radius: 9px;
+      background: linear-gradient(135deg, #0284c7, #0f172a);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 14px;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-title {
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+
+    .brand-sub {
+      font-size: 11px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .pill-live {
+      background: var(--success-bg);
+      color: #047857;
+      border: 1px solid #a7f3d0;
+      font-size: 10.5px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .pill-live::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      flex-shrink: 0;
+      background: var(--success);
+      border-radius: 50%;
+    }
+
+    .nav-tabs {
+      display: flex;
+      background: #f1f5f9;
+      padding: 3px;
+      border-radius: 10px;
+      gap: 3px;
+    }
+
+    .nav-tab {
+      border: none;
+      background: transparent;
+      padding: 6px 11px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.15s ease;
+    }
+
+    .nav-tab:hover {
+      color: var(--text);
+    }
+
+    .nav-tab.active {
+      background: var(--surface);
+      color: var(--text);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .badge-count {
+      background: var(--primary);
+      color: white;
+      font-size: 10.5px;
+      padding: 1px 6px;
+      border-radius: 999px;
+      font-weight: 700;
+    }
+
+    .role-switch {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11.5px;
+      color: var(--muted);
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      padding: 3px 6px;
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .role-btn {
+      border: none;
+      background: transparent;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .role-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* MAIN CONTAINER */
+    main {
+      max-width: 1360px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 14px 16px 36px;
+      flex: 1;
+    }
+
+    /* HERO OMNI-SEARCH ("WHERE TO?" UBER BAR) */
+    .uber-search-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: white;
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-md);
+    }
+
+    .uber-search-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .uber-greeting {
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .uber-sub {
+      font-size: 12.5px;
+      color: #94a3b8;
+    }
+
+    .uber-stats {
+      display: flex;
+      gap: 14px;
+    }
+
+    .stat-pill {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .stat-pill strong {
+      color: #38bdf8;
+      font-size: 13.5px;
+    }
+
+    .search-input-wrap {
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 12px;
+      padding: 6px 8px 6px 16px;
+      gap: 10px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    }
+
+    .search-input-wrap input {
+      flex: 1;
+      border: none;
+      outline: none;
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .search-input-wrap input::placeholder {
+      color: #94a3b8;
+      font-weight: 400;
+    }
+
+    .btn-ask-ai {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 9px;
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s;
+    }
+
+    .btn-ask-ai:hover {
+      background: var(--primary-dark);
+    }
+
+    .quick-prompts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+      align-items: center;
+    }
+
+    .quick-prompts span {
+      font-size: 11.5px;
+      color: #94a3b8;
+    }
+
+    .prompt-chip {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      padding: 5px 11px;
+      border-radius: 999px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .prompt-chip:hover {
+      background: rgba(56, 189, 248, 0.22);
+      border-color: #38bdf8;
+      color: white;
+    }
+
+    /* AI INSTANT ANSWER BANNER */
+    .ai-answer-box {
+      display: none;
+      margin-top: 14px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid #38bdf8;
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: #f8fafc;
+      font-size: 13.5px;
+    }
+
+    .ai-answer-box.visible {
+      display: block;
+    }
+
+    .ai-answer-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+      font-size: 11.5px;
+      color: #38bdf8;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    /* WORKSPACE GRID: LEFT = CUSTOMERS/CONTRACTS, RIGHT = 360 CUSTOMER PASSPORT & VISUAL TREE */
+    .workspace-grid {
+      display: grid;
+      grid-template-columns: 255px 1fr;
+      gap: 14px;
+      align-items: start;
+    }
+
+    @media (max-width: 640px) {
+      .workspace-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+    }
+
+    .panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #fcfcfd;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .filter-pills {
+      display: flex;
+      gap: 6px;
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+      overflow-x: auto;
+    }
+
+    .filter-pill {
+      border: 1px solid var(--border);
+      background: white;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--muted);
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .filter-pill.active {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    /* CUSTOMER / ACCOUNT LIST */
+    .customer-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .customer-item {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      transition: background 0.12s;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .customer-item:hover {
+      background: var(--surface-hover);
+    }
+
+    .customer-item.active {
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+    }
+
+    .cust-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cust-name {
+      font-weight: 700;
+      font-size: 14.5px;
+      color: var(--text);
+    }
+
+    .cust-count {
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--primary-dark);
+      background: rgba(2, 132, 199, 0.1);
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+
+    .cust-meta {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .status-dot {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11.5px;
+      font-weight: 600;
+    }
+
+    .status-dot.green { color: #059669; }
+    .status-dot.amber { color: #d97706; }
+    .status-dot.blue { color: #0284c7; }
+
+    /* RIGHT PANEL: 360 CUSTOMER PASSPORT */
+    .passport-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 12px;
+      background: linear-gradient(to right, #ffffff, #f8fafc);
+    }
+
+    .passport-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .passport-sub {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 3px;
+    }
+
+    .passport-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-outline {
+      border: 1px solid var(--border);
+      background: white;
+      padding: 8px 13px;
+      border-radius: 9px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-outline:hover {
+      background: var(--surface-hover);
+    }
+
+    .btn-primary {
+      border: none;
+      background: var(--primary);
+      color: white;
+      padding: 8px 14px;
+      border-radius: 9px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    /* "WAT GELDT ER NU?" — AI LIVE TRUTH CARDS */
+    .truth-section {
+      padding: 18px 24px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      color: var(--muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .truth-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(195px, 1fr));
+      gap: 12px;
+    }
+
+    .truth-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      padding: 12px 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .truth-card.overridden {
+      border-left: 4px solid var(--warning);
+      background: #fffdf7;
+    }
+
+    .truth-card.standard {
+      border-left: 4px solid var(--success);
+    }
+
+    .truth-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .truth-val {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .truth-source {
+      font-size: 11px;
+      color: var(--primary-dark);
+      margin-top: 5px;
+      font-weight: 500;
+    }
+
+    /* VISUAL CONTRACT TREE (HIERARCHY & TIMELINE) */
+    .tree-section {
+      padding: 20px 24px;
+    }
+
+    .contract-tree {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+      padding-left: 22px;
+    }
+
+    .contract-tree::before {
+      content: "";
+      position: absolute;
+      left: 7px;
+      top: 16px;
+      bottom: 16px;
+      width: 2px;
+      background: #cbd5e1;
+    }
+
+    .tree-node {
+      position: relative;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 16px;
+      transition: all 0.15s;
+      cursor: pointer;
+    }
+
+    .tree-node:hover {
+      border-color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tree-node.selected {
+      border-color: var(--primary);
+      background: #f0f9ff;
+    }
+
+    .tree-node::before {
+      content: "";
+      position: absolute;
+      left: -19px;
+      top: 20px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: 2px solid white;
+      box-shadow: 0 0 0 2px var(--primary);
+    }
+
+    .node-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .node-title {
+      font-weight: 700;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .doc-badge {
+      font-size: 10.5px;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 6px;
+      text-transform: uppercase;
+    }
+
+    .doc-badge.nda { background: #e0f2fe; color: #0369a1; }
+    .doc-badge.msa { background: #ede9fe; color: #6d28d9; }
+    .doc-badge.addendum { background: #fef3c7; color: #b45309; }
+    .doc-badge.order { background: #dcfce7; color: #15803d; }
+
+    .node-desc {
+      font-size: 12.5px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    .node-override-tag {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 11.5px;
+      background: var(--warning-bg);
+      color: #b45309;
+      border: 1px solid #fde68a;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    /* DOCUMENT PREVIEW & AI JSON DRAWER */
+    .doc-preview-box {
+      margin-top: 18px;
+      border-top: 1px solid var(--border);
+      padding-top: 18px;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 860px) {
+      .doc-preview-box {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .paper-doc {
+      background: #ffffff;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      padding: 18px 20px;
+      font-size: 12.5px;
+      line-height: 1.6;
+      box-shadow: inset 0 1px 4px rgba(0,0,0,0.03);
+    }
+
+    .paper-doc h4 {
+      text-align: center;
+      font-size: 13px;
+      margin-bottom: 10px;
+      letter-spacing: 0.4px;
+    }
+
+    .hl {
+      background: #fef08a;
+      padding: 1px 4px;
+      border-radius: 3px;
+      font-weight: 600;
+    }
+
+    .json-box {
+      background: #0f172a;
+      color: #e2e8f0;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-family: "Cascadia Code", Consolas, monospace;
+      font-size: 11.5px;
+      overflow-x: auto;
+    }
+
+    /* TAB 2: UBER RIDE TRACKER FOR FIRMA.DEV SIGNING */
+    .tracker-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .tracker-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .uber-steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      position: relative;
+    }
+
+    @media (max-width: 760px) {
+      .uber-steps {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .uber-step {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    .uber-step.done {
+      background: var(--success-bg);
+      border-color: #a7f3d0;
+    }
+
+    .uber-step.current {
+      background: #eff6ff;
+      border: 2px solid var(--primary);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.12);
+    }
+
+    .step-num {
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+      color: var(--muted);
+    }
+
+    .uber-step.done .step-num { color: #047857; }
+    .uber-step.current .step-num { color: var(--primary-dark); }
+
+    .step-title {
+      font-weight: 700;
+      font-size: 13px;
+      margin-bottom: 3px;
+    }
+
+    .step-time {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    /* TAB 3: 1-CLICK AI DROPZONE */
+    .dropzone {
+      border: 2px dashed #94a3b8;
+      background: white;
+      border-radius: 16px;
+      padding: 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s;
+      margin-bottom: 20px;
+    }
+
+    .dropzone:hover {
+      border-color: var(--primary);
+      background: #f0f9ff;
+    }
+
+    .extracted-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 14px;
+    }
+
+    .field-box {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 12px;
+    }
+
+    .field-label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .field-value {
+      font-size: 13.5px;
+      font-weight: 700;
+      margin-top: 3px;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 24px;
+      background: #0f172a;
+      color: white;
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: var(--shadow-md);
+      z-index: 100;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVIGATION BAR: ULTRA CLEAN (3 TABS + ROLE SWITCHER) -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">SC</div>
+      <div>
+        <div class="brand-title">
+          Skyline Contract Hub
+          <span class="pill-live">1,189 docs • SharePoint + Azure AI</span>
+        </div>
+        <div class="brand-sub">Uber-UX Prototype • 0-Click Customer Passport &amp; Firma.dev E-Signing</div>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab('hub', this)">
+        🔍 Customer Passport &amp; Search
+      </button>
+      <button class="nav-tab" onclick="switchTab('tracker', this)">
+        🚗 Live Signing Tracker
+        <span class="badge-count" id="signingBadge">2 active</span>
+      </button>
+      <button class="nav-tab" onclick="switchTab('upload', this)">
+        ⚡ 1-Click AI Intake &amp; Sign
+      </button>
+    </div>
+
+    <div class="role-switch">
+      <span>View:</span>
+      <button class="role-btn active" id="roleSales" onclick="setRole('sales')">👔 Sales (Self-Service)</button>
+      <button class="role-btn" id="roleLegal" onclick="setRole('legal')">⚖️ Legal (Michel)</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ================= TAB 1: CUSTOMER PASSPORT & OMNI-SEARCH ================= -->
+    <section id="tab-hub">
+      <div class="uber-search-card">
+        <div class="uber-search-top">
+          <div>
+            <div class="uber-greeting" id="greetingText">What are you looking for today? (Sales Self-Service)</div>
+            <div class="uber-sub">Type a customer name or ask in plain English — AI instantly searches all 1,189 contracts &amp; addenda.</div>
+          </div>
+          <div class="uber-stats">
+            <div class="stat-pill"><strong>1,189</strong> Active &amp; Signed docs</div>
+            <div class="stat-pill"><strong>3</strong> Renewals &lt; 60 days</div>
+            <div class="stat-pill"><strong>€0.049</strong> / sign via Firma.dev</div>
+          </div>
+        </div>
+
+        <div class="search-input-wrap">
+          <span>🔎</span>
+          <input
+            type="text"
+            id="omniInput"
+            placeholder="Search customer (e.g. Optus, Sky Italia, Yleisradio) or ask: 'What is the liability cap for Optus?'"
+            oninput="filterCustomers(this.value)"
+            onkeydown="if(event.key==='Enter') askCurrentQuestion()"
+          />
+          <button class="btn-ask-ai" onclick="askCurrentQuestion()">✨ Ask AI</button>
+        </div>
+
+        <div class="quick-prompts">
+          <span>1-click questions for Sales:</span>
+          <button class="prompt-chip" onclick="runPresetQuestion('optus-cap')">💡 What terms apply right now for Optus (across all addenda)?</button>
+          <button class="prompt-chip" onclick="runPresetQuestion('sky-nda')">🤝 Can I already share confidential roadmap info with Sky Italia?</button>
+          <button class="prompt-chip" onclick="runPresetQuestion('renewals')">⏰ Which contracts are up for renewal within 90 days?</button>
+          <button class="prompt-chip" onclick="runPresetQuestion('authority')">✍️ Who must sign contracts above €50,000?</button>
+        </div>
+
+        <div class="ai-answer-box" id="aiAnswerBox">
+          <div class="ai-answer-header">
+            <span>⚡ Instant AI Answer (Verified against SharePoint source files)</span>
+            <button onclick="document.getElementById('aiAnswerBox').classList.remove('visible')" style="background:none;border:none;color:#94a3b8;cursor:pointer;">✕ Close</button>
+          </div>
+          <div id="aiAnswerText"></div>
+        </div>
+      </div>
+
+      <div class="workspace-grid">
+        <!-- LEFT COLUMN: CUSTOMERS GROUPED AUTOMATICALLY -->
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-title">🏢 Customers &amp; Accounts (Auto-grouped)</div>
+            <span style="font-size:11.5px;color:var(--muted);">Click for 360° tree</span>
+          </div>
+          <div class="filter-pills">
+            <button class="filter-pill active" onclick="filterByTag('all', this)">All (6)</button>
+            <button class="filter-pill" onclick="filterByTag('multi', this)">Multi-contract (3)</button>
+            <button class="filter-pill" onclick="filterByTag('renewal', this)">⚠️ Renewal Alert (2)</button>
+            <button class="filter-pill" onclick="filterByTag('nda', this)">Recent NDA (2)</button>
+          </div>
+          <div class="customer-list" id="customerList"></div>
+        </div>
+
+        <!-- RIGHT COLUMN: 360° CUSTOMER PASSPORT & VISUAL CONTRACT TREE -->
+        <div class="panel" id="passportPanel"></div>
+      </div>
+    </section>
+
+    <!-- ================= TAB 2: LIVE UBER TRACKER FOR SIGNING ================= -->
+    <section id="tab-tracker" class="hidden">
+      <div class="uber-search-card" style="background: linear-gradient(135deg, #0369a1 0%, #0f172a 100%);">
+        <div class="uber-search-top" style="margin-bottom:0;">
+          <div>
+            <div class="uber-greeting">🚗 Live Signing &amp; Approval Tracker (Firma.dev)</div>
+            <div class="uber-sub">Track every contract in real time like an Uber ride: from Legal Check to counterparty signature and auto-filing in SharePoint.</div>
+          </div>
+          <button class="btn-ask-ai" style="background:#10b981;" onclick="simulateWebhookSign()">
+            ⚡ Simulate Customer Signature (Webhook Test)
+          </button>
+        </div>
+      </div>
+
+      <div id="trackerContainer"></div>
+    </section>
+
+    <!-- ================= TAB 3: 1-CLICK AI DROPZONE & FILING ================= -->
+    <section id="tab-upload" class="hidden">
+      <div class="dropzone" onclick="simulateNewUpload()">
+        <div style="font-size:34px;margin-bottom:8px;">📄✨</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text);">
+          Drag &amp; drop a PDF or Word contract here (or click to simulate a test upload)
+        </div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px;">
+          The Smart Mailroom (Azure AI) extracts counterparty, contract type, expiry date, notice period, and authorized signatory in 1.5 seconds.
+        </div>
+      </div>
+
+      <div class="extracted-card" id="uploadResultCard">
+        <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
+          <div>
+            <span class="pill-live" id="uploadBadge">Ready for 1-click confirmation</span>
+            <h3 style="font-size:17px;margin-top:6px;" id="uploadDocTitle">Sample: Addendum #2 - Yleisradio Oy (SaaS Expansion 2027).docx</h3>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn-outline" onclick="showToast('✅ Filed in SharePoint Vault + AI Index Card updated!')">
+              📁 File in SharePoint Only
+            </button>
+            <button class="btn-primary" onclick="sendToFirmaFromUpload()">
+              ✍️ Send for Signature via Firma.dev (€0.049)
+            </button>
+          </div>
+        </div>
+
+        <div class="form-grid">
+          <div class="field-box">
+            <div class="field-label">Detected Customer (Auto-Linked)</div>
+            <div class="field-value" id="upCustomer">Yleisradio Oy (YLE) — Existing account (2 docs)</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Skyline Entity</div>
+            <div class="field-value" id="upEntity">Skyline Communications NV (BE 0428.257.869)</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Contract Type &amp; Hierarchy</div>
+            <div class="field-value" id="upType">Addendum (Amends 2023 Frame Agreement)</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Contract Value &amp; Signing Authority (B2)</div>
+            <div class="field-value" id="upSigner" style="color:#0369a1;">€68,500 / year → CEO (Ben Vandenberghe, ≥ €50k)</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">Term &amp; Automated Renewal Alert</div>
+            <div class="field-value" id="upTerm">Until 31 Dec 2028 (Auto-alert 90 days prior to Sales &amp; Legal)</div>
+          </div>
+          <div class="field-box">
+            <div class="field-label">GTC / Playbook Check (AI)</div>
+            <div class="field-value" id="upRisk" style="color:#d97706;">⚠️ Flag: Counterparty requests 60-day payment term (Standard = 30d)</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast" id="toastMsg"></div>
+
+  <script>
+    let currentRole = 'sales';
+    let selectedCustomerId = 'optus';
+    let selectedDocIndex = 0;
+
+    const customers = [
+      {
+        id: 'optus',
+        name: 'Optus Administration Pty Ltd',
+        country: '🇦🇺 Australia • Telecom',
+        entity: 'Skyline Communications NV / APAC',
+        accountOwner: 'Sales APAC / Michel Hofmans',
+        statusText: 'Active Frame Agreement + 1 Addendum',
+        statusColor: 'green',
+        tags: ['multi', 'nda'],
+        truth: [
+          {
+            label: 'Liability Cap (Active)',
+            val: '200% of annual fees (Max €500k)',
+            source: '⚠️ Superseded by Addendum #1 (was 100% in MSA)',
+            type: 'overridden'
+          },
+          {
+            label: 'Notice Period & Renewal',
+            val: '90 days prior to 30 Nov 2027',
+            source: '✅ Per Master Frame Agreement (Art. 14.2)',
+            type: 'standard'
+          },
+          {
+            label: 'Confidentiality (NDA)',
+            val: 'Mutual NDA Active (Project SPA9102)',
+            source: '✅ Signed 29 Sept 2026 (Valid for 5 years)',
+            type: 'standard'
+          },
+          {
+            label: 'Support & SLA Tier',
+            val: 'SaaS Support + 99.9% Monthly Uptime',
+            source: '✅ Aligned with DataMiner SaaS SLA',
+            type: 'standard'
+          }
+        ],
+        docs: [
+          {
+            title: 'NDA - Optus (project SPA9102)',
+            badge: 'NDA',
+            badgeClass: 'nda',
+            date: '29 Sept 2026',
+            stage: 'Signed • Active',
+            owner: 'Michel Hofmans',
+            desc: 'Mutual Confidentiality Agreement between Optus Administration and Skyline Communications for project SPA9102.',
+            override: null,
+            excerpt: `<h4>MUTUAL CONFIDENTIALITY AGREEMENT — PROJECT SPA9102</h4>
+              <p>BETWEEN <span class="hl">Skyline Communications NV</span> ("Skyline") AND <span class="hl">Optus Administration Pty Limited</span> ("Optus").</p>
+              <p>1. <strong>Purpose:</strong> Evaluation of DataMiner orchestration &amp; SPA9102 architecture.<br/>
+              2. <strong>Term:</strong> Effective from <span class="hl">29 September 2026</span> for a period of <span class="hl">five (5) years</span>.</p>`,
+            json: {
+              document_id: "DOC-OPT-001",
+              type: "Mutual NDA",
+              counterparty: "Optus Administration Pty Ltd",
+              effective_date: "2026-09-29",
+              expiry_date: "2031-09-29",
+              project_code: "SPA9102",
+              roadmap_sharing_allowed: true
+            }
+          },
+          {
+            title: 'Master Frame & Services Agreement - Optus',
+            badge: 'MSA',
+            badgeClass: 'msa',
+            date: '14 Nov 2024',
+            stage: 'Signed • Active',
+            owner: 'Michel Hofmans',
+            desc: 'Master agreement covering DataMiner licenses, SaaS, and Professional Services.',
+            override: null,
+            excerpt: `<h4>MASTER FRAME AND SERVICES AGREEMENT</h4>
+              <p>Article 12.1 (Standard Limitation): Total aggregate liability of Skyline shall not exceed <span class="hl">100% of the fees paid in the 12 months preceding the claim</span>.</p>
+              <p>Article 14.2 (Renewal): Automatically renews annually unless terminated with <span class="hl">90 days written notice</span> prior to 30 November.</p>`,
+            json: {
+              document_id: "DOC-OPT-002",
+              type: "Master Frame Agreement",
+              governing_law: "Belgian Law",
+              notice_period_days: 90,
+              original_liability_cap: "100% of 12m fees"
+            }
+          },
+          {
+            title: 'Addendum #1 to Frame Agreement (Custom Liability & SLA)',
+            badge: 'Addendum',
+            badgeClass: 'addendum',
+            date: '18 Mar 2025',
+            stage: 'Signed • Active',
+            owner: 'Michel Hofmans',
+            desc: 'Custom amendment modifying the liability cap and SLA service credits for Optus Core Network.',
+            override: '⚡ Supersedes Art. 12.1 of the Master Frame Agreement (Liability cap increased from 100% to 200% / max €500k)',
+            excerpt: `<h4>ADDENDUM NO. 1 TO MASTER FRAME AGREEMENT</h4>
+              <p>The Parties agree to amend and replace <strong>Article 12.1</strong> of the Master Frame Agreement as follows:</p>
+              <p>"Skyline's aggregate liability for direct damages shall be capped at <span class="hl">200% of the annual recurring fees, with an absolute maximum of EUR 500,000</span>."</p>`,
+            json: {
+              document_id: "DOC-OPT-003",
+              type: "Addendum",
+              supersedes_document: "DOC-OPT-002",
+              supersedes_clause: "Article 12.1 (Liability Cap)",
+              new_active_liability_cap: "200% annual fees (max EUR 500,000)"
+            }
+          },
+          {
+            title: 'Cover Note for Supplier Data Request - Optus',
+            badge: 'RFP / Order',
+            badgeClass: 'order',
+            date: '9 Nov 2026',
+            stage: 'Signed',
+            owner: 'Michel Hofmans',
+            desc: 'Supplier Data Request & Security/Compliance confirmation from Skyline to Optus.',
+            override: null,
+            excerpt: `<h4>SUPPLIER DATA REQUEST — COVER NOTE</h4>
+              <p>Submitted by <span class="hl">Skyline Communications NV</span> to <span class="hl">Optus</span> on <span class="hl">9 November 2026</span> referencing ISO 27001 certification and existing Master Frame Agreement.</p>`,
+            json: {
+              document_id: "DOC-OPT-004",
+              type: "Request for Proposal / Supplier Data",
+              signed_date: "2026-11-09",
+              linked_msa: "DOC-OPT-002"
+            }
+          }
+        ]
+      },
+      {
+        id: 'sky-italia',
+        name: 'Sky Italia S.r.l. (Comcast Group)',
+        country: '🇮🇹 Italy • Media & Broadcast',
+        entity: 'Skyline Communications NV (BE 0428.257.869)',
+        accountOwner: 'Ajla Husic',
+        statusText: 'Signed NDA (9 Nov 2026)',
+        statusColor: 'green',
+        tags: ['nda'],
+        truth: [
+          {
+            label: 'Document Status',
+            val: 'Mutual NDA Signed (9 Nov 2026)',
+            source: '✅ Safe to share confidential product/roadmap info',
+            type: 'standard'
+          },
+          {
+            label: 'Scope (Recitals)',
+            val: 'Resource Planning & Management Solution',
+            source: '✅ Assessment to replace current Sky Italia platform',
+            type: 'standard'
+          },
+          {
+            label: 'Skyline Contracting Entity',
+            val: 'Skyline Communications NV (Izegem)',
+            source: '✅ VAT: BE 0428.257.869',
+            type: 'standard'
+          },
+          {
+            label: 'Recommended Next Step',
+            val: 'Initiate POC MoU or Frame Agreement',
+            source: '💡 Request draft via Legal / SalesOps',
+            type: 'overridden'
+          }
+        ],
+        docs: [
+          {
+            title: 'NDA - Sky Italia.DOCX',
+            badge: 'NDA',
+            badgeClass: 'nda',
+            date: '9 Nov 2026',
+            stage: 'Signed • Active',
+            owner: 'Ajla Husic',
+            desc: 'Mutual Non-Disclosure Agreement for Resource Planning & Management solution.',
+            override: null,
+            excerpt: `<h4>MUTUAL NON-DISCLOSURE AGREEMENT</h4>
+              <p>BETWEEN <span class="hl">Skyline Communications NV</span> with its registered office at <span class="hl">Ambachtenstraat 33, 8870 Izegem, Belgium</span>, Fiscal Code/VAT registration number <span class="hl">BE 0428.257.869</span> (the "Company")</p>
+              <p>AND <span class="hl">Sky Italia S.r.l.</span>, with registered offices in via Monte Penice, 7, Milan, 20138, subject to the direction and co-ordination of Comcast Corporation, Fiscal Code/VAT <span class="hl">04619241005</span> ("Sky Italia").</p>
+              <p><strong>WHEREAS:</strong> Sky Italia and the Company will enter into discussions for the assessment and selection of a new <span class="hl">Resource Planning &amp; Management solution</span> to replace the current platform...</p>`,
+            json: {
+              document_id: "DOC-SKY-2026-1109",
+              type: "Mutual Non-Disclosure Agreement",
+              skyline_entity: "Skyline Communications NV",
+              counterparty: "Sky Italia S.r.l.",
+              counterparty_vat: "04619241005",
+              parent_group: "Comcast Corporation",
+              purpose: "Assessment of Resource Planning & Management solution",
+              created_by: "Ajla Husic",
+              signed_date: "2026-11-09"
+            }
+          }
+        ]
+      },
+      {
+        id: 'yle',
+        name: 'Yleisradio Oy (YLE)',
+        country: '🇫🇮 Finland • Public Broadcaster',
+        entity: 'Skyline Communications NV',
+        accountOwner: 'Michel Hofmans',
+        statusText: '⚠️ Renewal in 52 days',
+        statusColor: 'amber',
+        tags: ['multi', 'renewal'],
+        truth: [
+          {
+            label: 'Active Agreement',
+            val: 'Frame & Services Agreement + Addendum',
+            source: '✅ Last amended on 16 Oct 2026',
+            type: 'standard'
+          },
+          {
+            label: 'Renewal / Notice Deadline',
+            val: '31 Dec 2026 (Alert active!)',
+            source: '⚠️ Automated notification sent to Sales & Legal',
+            type: 'overridden'
+          },
+          {
+            label: 'Applicable Rate Card',
+            val: 'Addendum 16 Oct 2026 rates active',
+            source: '✅ Supersedes Annex B from 2023',
+            type: 'standard'
+          }
+        ],
+        docs: [
+          {
+            title: 'Frame and Services Agreement - Yleisradio Oy',
+            badge: 'MSA',
+            badgeClass: 'msa',
+            date: '12 Jan 2023',
+            stage: 'Signed • Active',
+            owner: 'Michel Hofmans',
+            desc: 'Master Frame Agreement for DataMiner system and support services at YLE.',
+            override: null,
+            excerpt: `<h4>FRAME AND SERVICES AGREEMENT — YLEISRADIO OY</h4>
+              <p>Initial term runs until <span class="hl">31 December 2026</span> with subsequent 12-month extensions.</p>`,
+            json: {
+              document_id: "DOC-YLE-001",
+              type: "Frame Agreement",
+              counterparty: "Yleisradio Oy",
+              renewal_date: "2026-12-31"
+            }
+          },
+          {
+            title: 'Addendum to Frame and Services Agreement - Yleisradio Oy',
+            badge: 'Addendum',
+            badgeClass: 'addendum',
+            date: '16 Oct 2026',
+            stage: 'Signed • Active',
+            owner: 'Michel Hofmans',
+            desc: 'Service scope expansion and updated SLA terms signed 16 October 2026.',
+            override: '⚡ Adds expanded DataMiner Services bundle to the 2023 Frame Agreement',
+            excerpt: `<h4>ADDENDUM TO FRAME AND SERVICES AGREEMENT</h4>
+              <p>This Addendum between <span class="hl">Yleisradio Oy</span> and <span class="hl">Skyline Communications NV</span> dated <span class="hl">16 October 2026</span> extends the scope of services under the Frame Agreement.</p>`,
+            json: {
+              document_id: "DOC-YLE-002",
+              type: "Addendum",
+              supersedes_document: "DOC-YLE-001",
+              signed_date: "2026-10-16"
+            }
+          }
+        ]
+      },
+      {
+        id: 'qatar',
+        name: 'Qatar Satellite Company (Es\'hailSat)',
+        country: '🇶🇦 Qatar • Satellite Operator',
+        entity: 'Skyline Communications NV',
+        accountOwner: 'Michel Hofmans',
+        statusText: 'Signed Order (Professional Services)',
+        statusColor: 'green',
+        tags: ['multi'],
+        truth: [
+          {
+            label: 'Active Bundle',
+            val: 'Professional Services Credits (26 Oct 2026)',
+            source: '✅ Signed & filed in SharePoint',
+            type: 'standard'
+          },
+          {
+            label: 'Credit Validity',
+            val: '12 months from activation (26 Oct 2027)',
+            source: '⚠️ Expires automatically if unused',
+            type: 'overridden'
+          }
+        ],
+        docs: [
+          {
+            title: 'Order for Professional Services Credits - Qatar Satellite Co.',
+            badge: 'Order',
+            badgeClass: 'order',
+            date: '26 Oct 2026',
+            stage: 'Signed • Active',
+            owner: 'Michel Hofmans',
+            desc: 'Agreement for the provision of DataMiner Professional Services Credits.',
+            override: null,
+            excerpt: `<h4>ORDER FOR PROFESSIONAL SERVICES CREDITS</h4>
+              <p>Agreement for the provision of DataMiner Professional Services Credits between <span class="hl">Skyline Communications NV</span> and <span class="hl">Qatar Satellite Company</span> signed on <span class="hl">26 October 2026</span>.</p>`,
+            json: {
+              document_id: "DOC-QAT-001",
+              type: "Order / PO",
+              counterparty: "Qatar Satellite Company",
+              signed_date: "2026-10-26"
+            }
+          }
+        ]
+      },
+      {
+        id: 'ctech',
+        name: 'C Tech Bilisim Teknolojileri',
+        country: '🇹🇷 Turkey • Aerospace & SatCom',
+        entity: 'Skyline Communications NV',
+        accountOwner: 'Michel Hofmans',
+        statusText: '⚠️ LOI expires in 30 days',
+        statusColor: 'amber',
+        tags: ['renewal'],
+        truth: [
+          {
+            label: 'Current Status',
+            val: 'Letter of Intent (Signed 12 Oct 2026)',
+            source: '⚠️ Needs conversion to definitive Partnership Agreement',
+            type: 'overridden'
+          }
+        ],
+        docs: [
+          {
+            title: 'Letter of Intent - CTech',
+            badge: 'LOI',
+            badgeClass: 'msa',
+            date: '12 Oct 2026',
+            stage: 'Signed • Active',
+            owner: 'Michel Hofmans',
+            desc: 'Letter of Intent between Skyline Communications and C Tech Bilisim Teknolojileri.',
+            override: null,
+            excerpt: `<h4>LETTER OF INTENT</h4>
+              <p>Signed on <span class="hl">12 October 2026</span> between <span class="hl">Skyline Communications NV</span> and <span class="hl">C Tech Bilisim Teknolojileri</span> regarding Partnership &amp; Joint Venture collaboration.</p>`,
+            json: {
+              document_id: "DOC-CTECH-001",
+              type: "Letter of Intent",
+              category: "Partnership and JV",
+              signed_date: "2026-10-12"
+            }
+          }
+        ]
+      },
+      {
+        id: 'nrk',
+        name: 'NRK Corporate Procurement',
+        country: '🇳🇴 Norway • Public Broadcaster',
+        entity: 'Skyline Communications NV',
+        accountOwner: 'Ben Vandenberghe / Michel Hofmans',
+        statusText: 'Signed Tender Statement (9 Nov)',
+        statusColor: 'blue',
+        tags: [],
+        truth: [
+          {
+            label: 'Latest Document',
+            val: 'Statement for tender - NRK (9 Nov 2026)',
+            source: '✅ Signed & shared with BV',
+            type: 'standard'
+          }
+        ],
+        docs: [
+          {
+            title: 'Statement for tender - NRK',
+            badge: 'Tender',
+            badgeClass: 'order',
+            date: '9 Nov 2026',
+            stage: 'Signed',
+            owner: 'Michel Hofmans (Shared with BV)',
+            desc: 'Official tender statement from Skyline Communications NV to NRK.',
+            override: null,
+            excerpt: `<h4>STATEMENT FOR TENDER — NRK</h4>
+              <p>Official tender statement issued by <span class="hl">Skyline Communications NV</span> to <span class="hl">NRK Corporate Procurement</span> on <span class="hl">9 November 2026</span>.</p>`,
+            json: {
+              document_id: "DOC-NRK-001",
+              type: "Statement for Tender",
+              shared_with: ["BV"],
+              signed_date: "2026-11-09"
+            }
+          }
+        ]
+      }
+    ];
+
+    let envelopes = [
+      {
+        id: 'ENV-901',
+        title: 'Mutual NDA — Eutelsat Group (Project Orbit)',
+        customer: 'Eutelsat S.A.',
+        value: 'N/A (NDA)',
+        signerSkyline: 'Michel Hofmans (General Counsel, < €50k)',
+        signerClient: 'Jean-Luc Moreau (VP Legal, Eutelsat)',
+        cost: '€0.049 (Firma.dev)',
+        status: 'Opened by customer (12 mins ago)',
+        currentStep: 4,
+        steps: [
+          { title: 'AI Intake & Playbook Check', time: 'Today 08:15 • 0 deviations', state: 'done' },
+          { title: 'Skyline Signature', time: 'Today 08:20 • Michel Hofmans', state: 'done' },
+          { title: 'Dispatched via Firma.dev', time: 'Today 08:21 • eIDAS Envelope', state: 'done' },
+          { title: 'Customer Reviewing Doc', time: 'Live: Opened 12 mins ago', state: 'current' },
+          { title: 'Auto-File in SharePoint', time: 'Awaiting webhook...', state: 'pending' }
+        ]
+      },
+      {
+        id: 'ENV-902',
+        title: 'SaaS Subscription Order — Liberty Global (€84,000)',
+        customer: 'Liberty Global B.V.',
+        value: '€84,000 / year (≥ €50k → CEO)',
+        signerSkyline: 'Ben Vandenberghe (CEO, after Legal sign-off)',
+        signerClient: 'Sarah Jenkins (Procurement Director)',
+        cost: '€0.049 (Firma.dev)',
+        status: 'Awaiting CEO signature (Ben Vandenberghe)',
+        currentStep: 2,
+        steps: [
+          { title: 'AI Intake & GTC Check', time: 'Yesterday 16:40 • Approved by Michel', state: 'done' },
+          { title: 'CEO Signature (≥ €50k)', time: 'Notification sent to Ben V.', state: 'current' },
+          { title: 'Dispatch to Customer', time: 'Queued in Firma.dev', state: 'pending' },
+          { title: 'Customer Signature', time: 'Sarah Jenkins', state: 'pending' },
+          { title: 'Auto-File + AI Index', time: 'SharePoint Vault', state: 'pending' }
+        ]
+      }
+    ];
+
+    function renderCustomerList(list = customers) {
+      const container = document.getElementById('customerList');
+      container.innerHTML = list.map(c => `
+        <div class="customer-item ${c.id === selectedCustomerId ? 'active' : ''}" onclick="selectCustomer('${c.id}')">
+          <div class="cust-top">
+            <span class="cust-name">${c.name}</span>
+            <span class="cust-count">${c.docs.length} doc${c.docs.length > 1 ? 's' : ''}</span>
+          </div>
+          <div class="cust-meta">
+            <span>${c.country}</span>
+            <span class="status-dot ${c.statusColor}">● ${c.statusText}</span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function selectCustomer(id) {
+      selectedCustomerId = id;
+      selectedDocIndex = 0;
+      renderCustomerList();
+      renderPassport();
+    }
+
+    function selectDoc(idx) {
+      selectedDocIndex = idx;
+      renderPassport();
+    }
+
+    function renderPassport() {
+      const c = customers.find(x => x.id === selectedCustomerId) || customers[0];
+      const doc = c.docs[selectedDocIndex] || c.docs[0];
+      const panel = document.getElementById('passportPanel');
+
+      panel.innerHTML = `
+        <div class="passport-header">
+          <div>
+            <div class="passport-title">
+              ${c.name}
+              <span class="pill-live">360° Customer Passport</span>
+            </div>
+            <div class="passport-sub">
+              ${c.country} • Skyline Entity: <strong>${c.entity}</strong> • Owner: <strong>${c.accountOwner}</strong>
+            </div>
+          </div>
+          <div class="passport-actions">
+            <button class="btn-outline" onclick="showToast('🔗 Direct link to this Customer Passport copied for Sales!')">
+              📤 Share with Sales
+            </button>
+            <button class="btn-primary" onclick="switchTab('upload', document.querySelectorAll('.nav-tab')[2])">
+              + New Addendum / Contract
+            </button>
+          </div>
+        </div>
+
+        <!-- AI LIVE TRUTH: WHAT APPLIES RIGHT NOW? -->
+        <div class="truth-section">
+          <div class="section-label">
+            <span>🧠 What applies right now for ${c.name}? (AI Synthesis across all ${c.docs.length} documents)</span>
+            <span style="color:var(--primary-dark);">0 clicks needed</span>
+          </div>
+          <div class="truth-grid">
+            ${c.truth.map(t => `
+              <div class="truth-card ${t.type}">
+                <div class="truth-label">${t.label}</div>
+                <div class="truth-val">${t.val}</div>
+                <div class="truth-source">${t.source}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        <!-- VISUAL CONTRACT TREE -->
+        <div class="tree-section">
+          <div class="section-label">
+            <span>🌳 Visual Contract Tree &amp; Hierarchy (Click any document for clause preview &amp; AI card)</span>
+            <span>Stored in SharePoint Vault</span>
+          </div>
+
+          <div class="contract-tree">
+            ${c.docs.map((d, i) => `
+              <div class="tree-node ${i === selectedDocIndex ? 'selected' : ''}" onclick="selectDoc(${i})">
+                <div class="node-top">
+                  <div class="node-title">
+                    <span class="doc-badge ${d.badgeClass}">${d.badge}</span>
+                    ${d.title}
+                  </div>
+                  <div style="font-size:12px;color:var(--muted);font-weight:600;">
+                    <span style="color:#059669;">● ${d.stage}</span> • ${d.date} • ${d.owner}
+                  </div>
+                </div>
+                <div class="node-desc">${d.desc}</div>
+                ${d.override ? `<div class="node-override-tag">${d.override}</div>` : ''}
+              </div>
+            `).join('')}
+          </div>
+
+          <!-- SELECTED DOCUMENT PREVIEW + AI JSON CARD -->
+          <div class="doc-preview-box">
+            <div>
+              <div class="section-label">📄 Instant Clause Preview (${doc.title})</div>
+              <div class="paper-doc">
+                ${doc.excerpt}
+              </div>
+            </div>
+            <div>
+              <div class="section-label">🤖 AI-Future-Proof Index Card (Structured JSON)</div>
+              <pre class="json-box">${JSON.stringify(doc.json, null, 2)}</pre>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function filterCustomers(q) {
+      const query = q.toLowerCase().trim();
+      if (!query) {
+        renderCustomerList(customers);
+        return;
+      }
+      const filtered = customers.filter(c =>
+        c.name.toLowerCase().includes(query) ||
+        c.country.toLowerCase().includes(query) ||
+        c.docs.some(d => d.title.toLowerCase().includes(query) || d.desc.toLowerCase().includes(query))
+      );
+      if (filtered.length > 0) {
+        selectedCustomerId = filtered[0].id;
+        selectedDocIndex = 0;
+        renderCustomerList(filtered);
+        renderPassport();
+      } else {
+        renderCustomerList(customers);
+      }
+    }
+
+    function filterByTag(tag, btn) {
+      document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (tag === 'all') {
+        renderCustomerList(customers);
+      } else {
+        const filtered = customers.filter(c => c.tags.includes(tag));
+        renderCustomerList(filtered);
+        if (filtered.length > 0) {
+          selectCustomer(filtered[0].id);
+        }
+      }
+    }
+
+    function runPresetQuestion(key) {
+      const box = document.getElementById('aiAnswerBox');
+      const txt = document.getElementById('aiAnswerText');
+      box.classList.add('visible');
+
+      if (key === 'optus-cap') {
+        selectCustomer('optus');
+        selectedDocIndex = 2;
+        renderPassport();
+        txt.innerHTML = `<strong>Answer for Optus:</strong> While the original Master Frame Agreement (Nov 2024) set a standard 100% liability cap, <strong>Addendum #1 (signed 18 March 2025) superseded Article 12.1</strong> and raised the cap to <strong>200% of annual recurring fees (capped at €500,000 maximum)</strong>. The termination notice period remains 90 days prior to 30 November. <em>(Source: DOC-OPT-003, Art. 12.1)</em>`;
+      } else if (key === 'sky-nda') {
+        selectCustomer('sky-italia');
+        txt.innerHTML = `<strong>Yes, you can!</strong> A <em>Mutual Non-Disclosure Agreement</em> was signed on <strong>9 November 2026</strong> between <strong>Skyline Communications NV</strong> and <strong>Sky Italia S.r.l.</strong> (created by Ajla Husic) specifically covering the <em>Resource Planning &amp; Management</em> evaluation. No need to ask Michel for a new NDA.`;
+      } else if (key === 'renewals') {
+        selectCustomer('yle');
+        txt.innerHTML = `<strong>2 contracts require action within the next 90 days:</strong><br/>
+        1. <strong>Yleisradio Oy (YLE)</strong> — Frame Agreement renews/expires on <strong>31 Dec 2026</strong> (automated alert sent to Sales &amp; Legal).<br/>
+        2. <strong>C Tech Bilisim Teknolojileri</strong> — Letter of Intent (12 Oct 2026) should be converted into a definitive Partnership Agreement before <strong>12 Dec 2026</strong>.`;
+      } else if (key === 'authority') {
+        txt.innerHTML = `<strong>Skyline Signing Authority Rules (Policy B2):</strong><br/>
+        • Contract value <strong>&lt; €50,000</strong> (and standard NDAs): <strong>Michel Hofmans</strong> (General Counsel).<br/>
+        • Contract value <strong>&ge; €50,000</strong>: <strong>Ben Vandenberghe</strong> (CEO), following Legal review.<br/>
+        • Supplier / Procurement contracts (any value, no financial exemption): always signed by the <strong>CFO</strong> after Legal + InfoSec review.`;
+      }
+    }
+
+    function askCurrentQuestion() {
+      const val = document.getElementById('omniInput').value.trim();
+      if (!val) {
+        runPresetQuestion('optus-cap');
+        return;
+      }
+      const box = document.getElementById('aiAnswerBox');
+      const txt = document.getElementById('aiAnswerText');
+      box.classList.add('visible');
+      txt.innerHTML = `<strong>AI Result for "${val}":</strong> Matched across SharePoint index in 0.04s. The corresponding Customer Passport and governing clauses are displayed below.`;
+    }
+
+    function renderTracker() {
+      const container = document.getElementById('trackerContainer');
+      container.innerHTML = envelopes.map(env => `
+        <div class="tracker-card">
+          <div class="tracker-top">
+            <div>
+              <div style="font-size:16px;font-weight:800;display:flex;align-items:center;gap:10px;">
+                ${env.title}
+                <span class="pill-live">${env.status}</span>
+              </div>
+              <div style="font-size:12.5px;color:var(--muted);margin-top:4px;">
+                Customer: <strong>${env.customer}</strong> • Skyline Signer: <strong>${env.signerSkyline}</strong> • Counterparty Signer: <strong>${env.signerClient}</strong> • Cost: <strong>${env.cost}</strong>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="btn-outline" onclick="showToast('🔔 Friendly reminder sent via Firma.dev to ' + '${env.signerClient}')">
+                🔔 Send Reminder
+              </button>
+            </div>
+          </div>
+
+          <div class="uber-steps">
+            ${env.steps.map((s, idx) => `
+              <div class="uber-step ${s.state}">
+                <div class="step-num">Step ${idx + 1} ${s.state === 'done' ? '✓' : s.state === 'current' ? '● LIVE' : ''}</div>
+                <div class="step-title">${s.title}</div>
+                <div class="step-time">${s.time}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function simulateWebhookSign() {
+      const env = envelopes[0];
+      env.status = '✅ Signed & Auto-Filed in SharePoint!';
+      env.steps[3].state = 'done';
+      env.steps[3].time = 'Just signed by Jean-Luc Moreau';
+      env.steps[4].state = 'done';
+      env.steps[4].time = 'PDF + eIDAS Certificate stored in SharePoint Vault';
+      document.getElementById('signingBadge').textContent = '1 active';
+      renderTracker();
+      showToast('🎉 Firma.dev webhook received: Eutelsat NDA is signed and automatically archived in SharePoint!');
+    }
+
+    function simulateNewUpload() {
+      document.getElementById('uploadBadge').textContent = '✨ Analyzed by Azure AI (1.2 sec)';
+      document.getElementById('uploadDocTitle').textContent = 'New Upload: Master SaaS Agreement — Harmonic Technologies (2026).pdf';
+      document.getElementById('upCustomer').textContent = 'Harmonic Technologies — Auto-linked to existing NDA (29 Sept)';
+      document.getElementById('upType').textContent = 'Master SaaS Agreement (New Master Contract)';
+      document.getElementById('upSigner').textContent = '€42,000 / year → Michel Hofmans (General Counsel, < €50k)';
+      document.getElementById('upRisk').textContent = '✅ 100% aligned with DataMiner SaaS GTC (No deviations)';
+      document.getElementById('upRisk').style.color = '#059669';
+      showToast('🤖 AI parsed the contract and linked it to Harmonic Technologies’ existing NDA!');
+    }
+
+    function sendToFirmaFromUpload() {
+      envelopes.unshift({
+        id: 'ENV-903',
+        title: document.getElementById('uploadDocTitle').textContent.replace('Sample: ', '').replace('New Upload: ', ''),
+        customer: document.getElementById('upCustomer').textContent.split('—')[0].trim(),
+        value: document.getElementById('upSigner').textContent,
+        signerSkyline: document.getElementById('upSigner').textContent.includes('Michel') ? 'Michel Hofmans (GC)' : 'Ben Vandenberghe (CEO)',
+        signerClient: 'Legal & Procurement Counterparty',
+        cost: '€0.049 (Firma.dev)',
+        status: 'Dispatched via Firma.dev (Just created)',
+        currentStep: 3,
+        steps: [
+          { title: 'AI Intake & Index Card', time: 'Just completed', state: 'done' },
+          { title: 'Skyline Approval', time: 'Queued', state: 'done' },
+          { title: 'Sent via Firma.dev', time: 'Just dispatched (€0.049)', state: 'current' },
+          { title: 'Awaiting Customer', time: 'Not opened yet', state: 'pending' },
+          { title: 'Auto-File in SharePoint', time: 'Automatic upon signature', state: 'pending' }
+        ]
+      });
+      document.getElementById('signingBadge').textContent = envelopes.length + ' active';
+      renderTracker();
+      switchTab('tracker', document.querySelectorAll('.nav-tab')[1]);
+      showToast('🚀 Envelope dispatched via Firma.dev (€0.049) — track it live in the Signing Tracker!');
+    }
+
+    function switchTab(tab, btn) {
+      document.getElementById('tab-hub').classList.add('hidden');
+      document.getElementById('tab-tracker').classList.add('hidden');
+      document.getElementById('tab-upload').classList.add('hidden');
+      document.getElementById('tab-' + tab).classList.remove('hidden');
+
+      document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+      if (btn) btn.classList.add('active');
+    }
+
+    function setRole(role) {
+      currentRole = role;
+      document.getElementById('roleSales').classList.toggle('active', role === 'sales');
+      document.getElementById('roleLegal').classList.toggle('active', role === 'legal');
+      const greeting = document.getElementById('greetingText');
+      if (role === 'sales') {
+        greeting.textContent = 'What are you looking for today? (Sales Self-Service — Without pinging Michel 😉)';
+        showToast('👔 Sales view active: focused on instant answers, customer contract tree, and live signing status.');
+      } else {
+        greeting.textContent = 'Good morning Michel — Legal Cockpit (1,189 contracts organized)';
+        showToast('⚖️ Legal view active: includes AI JSON index cards, GTC deviations, and signing authority checks.');
+      }
+    }
+
+    function showToast(msg) {
+      const t = document.getElementById('toastMsg');
+      t.textContent = msg;
+      t.style.display = 'block';
+      clearTimeout(window._toastTimer);
+      window._toastTimer = setTimeout(() => {
+        t.style.display = 'none';
+      }, 4200);
+    }
+
+    // Init
+    renderCustomerList();
+    renderPassport();
+    renderTracker();
+  </script>
+</body>
+</html>
